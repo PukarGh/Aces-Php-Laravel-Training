@@ -17,22 +17,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Facade
-Route::get('contact', function () {
-    return view('contact');
-});
+Route::get('event', 'App\Http\Controllers\EventController@index')->name('event.index');
 
-Route::get('about-us', function () {
-    echo 'About Us Page';
-});
+Route::get('event/create', function (){
+    return view('event.create');
+})->middleware('auth');
 
-Route::get('user-list', 'App\Http\Controllers\UserController@list');
-Route::get('user-details', 'App\Http\Controllers\UserController@details');
+Route::post('event/save', 'App\Http\Controllers\EventController@store')
+    ->name('event.save')
+    ->middleware('auth');
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-Route::get('form', 'App\Http\Controllers\FormController@displayForm');
-Route::post('form-submit', 'App\Http\Controllers\FormController@saveForm');
-
-
-
-
+require __DIR__.'/auth.php';
