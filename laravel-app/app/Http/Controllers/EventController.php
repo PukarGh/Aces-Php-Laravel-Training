@@ -9,7 +9,9 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::with('user')->get();
+        $events = Event::with('user')
+            ->withCount('goingParticipants', 'notGoingParticipants')
+            ->get();
         return view('event.index', compact('events'));
     }
 
@@ -31,4 +33,38 @@ class EventController extends Controller
 
         return redirect()->route('event.index')->with(['message' => 'Event Created']);
     }
+
+    public function edit(Event $event)
+    {
+        return view('event.edit', compact('event'));
+    }
+
+    public function update(Request $request, Event $event)
+    {
+        if ($event->user_id == auth()->id()){
+            $event->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'date' => $request->date,
+            ]);
+
+            return redirect()->route('event.index')->with(['message' => 'Event Updated']);
+        } else {
+            abort(403);
+        }
+    }
+
+    public function delete(Event $event)
+    {
+        if ($event->user_id == auth()->id()) {
+            $event->delete();
+            return redirect()->route('event.index')->with(['message' => 'Event Deleted']);
+        } else {
+            abort(403);
+        }
+    }
+
+    // Migration
+    // Participants -> model
+// Controller
 }
